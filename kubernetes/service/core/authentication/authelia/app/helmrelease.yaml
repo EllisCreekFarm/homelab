@@ -83,6 +83,24 @@ spec:
           litestream-restore-database:
             <<: *lightstream
             args: ["restore", "-if-db-not-exists", "-if-replica-exists", "/data/db.sqlite3"]
+          assets-sync:
+            image:
+              repository: registry.k8s.io/git-sync/git-sync
+              tag: v4.4.0@sha256:0330739a707a2969d617e859f096659ab6d149212658ac0ad7e550b59482ebf0
+            env:
+              GITSYNC_REPO: "${CLUSTER_GIT_REPO_URL}"
+              GITSYNC_REF: "${CLUSTER_GIT_REPO_BRANCH}"
+              GITSYNC_ROOT: /data/git
+              GITSYNC_ONE_TIME: true
+            envFrom:
+              - secretRef:
+                  name: authelia-git-sync-secret
+          assets-copy:
+            dependsOn: assets-sync
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: 1.37.0-musl@sha256:37ccc05112d0a7162b605c375f5c0f5cfbc6e6c4fc8030ead6ae26a18c28a542
+            command: ["/bin/sh", "-c", "cp -v -r /data/git/homelab/kubernetes/service/core/authentication/authelia/app/assets/. /assets/"]
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -147,18 +165,34 @@ spec:
                 subPath: "litestream.yml"
                 readOnly: true
             litestream-restore-database: *litestream-config
+      asserts-sync:
+        type: emptyDir
+        advancedMounts:
+          authelia:
+            assets-sync:
+              - path: /data/git
+            assets-copy:
+              - path: /data/git
+                readOnly: true
       assets:
-        type: configMap
-        name: authelia-assets
+        type: emptyDir
         advancedMounts:
           authelia:
             app:
               - path: /assets
                 readOnly: true
+            assets-copy:
+              - path: /assets
       data:
         existingClaim: authelia-data
-        globalMounts:
-          - path: /data
+        advancedMounts:
+          authelia:
+            app:
+              - path: /data
+            litestream:
+              - path: /data
+            litestream-restore-database:
+              - path: /data
       secrets:
         type: secret
         name: authelia-secret

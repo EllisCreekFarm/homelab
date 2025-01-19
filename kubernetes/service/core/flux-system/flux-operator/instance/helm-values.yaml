@@ -13,7 +13,7 @@ instance:
   sync:
     kind: GitRepository
     url: "${CLUSTER_GIT_REPO_URL}"
-    ref: "${CLUSTER_GIT_REPO_REF}"
+    ref: "refs/heads/${CLUSTER_GIT_REPO_BRANCH}"
     path: kubernetes/flux/cluster
     pullSecret: github-deploy-key
   commonMetadata:

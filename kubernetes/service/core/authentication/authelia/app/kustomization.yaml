@@ -13,9 +13,5 @@ configMapGenerator:
     files:
       - configuration.yaml=./resources/configuration.yaml
       - litestream.yml=./resources/litestream.yml
-  - name: authelia-assets
-    files:
-      - ./resources/favicon.ico
-      - ./resources/logo.png
 generatorOptions:
   disableNameSuffixHash: true

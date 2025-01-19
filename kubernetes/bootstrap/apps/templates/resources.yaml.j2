@@ -70,7 +70,7 @@ data:
   CLUSTER_LDAP_BASE_DN: "#{ get_env('CLOUDFLARE_DOMAIN') | domain2dn }#"
   CLUSTER_TZ: "#{ get_env('CLUSTER_TZ') }#"
   CLUSTER_GIT_REPO_URL: "#{ get_env('CLUSTER_GIT_REPO_URL') }#"
-  CLUSTER_GIT_REPO_REF: "#{ get_env('CLUSTER_GIT_REPO_REF') }#"
+  CLUSTER_GIT_REPO_BRANCH: "#{ get_env('CLUSTER_GIT_REPO_BRANCH') }#"
   K8S_GATEWAY_IP: 192.168.2.82
   ZFS_POOL_NAME: "#{ get_env('ZFS_POOL_NAME') }#"
   ONEPASSWORD_VAULT: "#{ get_env('VAULT') }#"

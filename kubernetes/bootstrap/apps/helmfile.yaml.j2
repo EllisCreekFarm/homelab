@@ -90,4 +90,4 @@ releases:
         spec:
           sync:
             url: "{{ requiredEnv "CLUSTER_GIT_REPO_URL" }}"
-            ref: "{{ requiredEnv "CLUSTER_GIT_REPO_REF" }}"
+            ref: "refs/heads/{{ requiredEnv "CLUSTER_GIT_REPO_BRANCH" }}"

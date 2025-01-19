@@ -13,7 +13,6 @@ vars:
   CLUSTER_GIT_REPO_URL: "https://github.com/kadaan/homelab"
   CLUSTER_GIT_REPO_BRANCH:
     sh: "git rev-parse --abbrev-ref HEAD"
-  CLUSTER_GIT_REPO_REF: "refs/heads/{{ .CLUSTER_GIT_REPO_BRANCH }}"
   VAULT:
     sh: "echo '{{ .BRANCH }}' | awk -F: '{if ($1 == \"master\") { print \"kubernetes - production\" } else { print \"kubernetes - develop\" }}'"
 
@@ -21,7 +20,7 @@ env:
   MAKEJINJA_SETTINGS: '{{.MAKEJINJA_SETTINGS}}'
   PYTHONDONTWRITEBYTECODE: '1'
   CLUSTER_GIT_REPO_URL: "{{.CLUSTER_GIT_REPO_URL}}"
-  CLUSTER_GIT_REPO_REF: "{{.CLUSTER_GIT_REPO_REF}}"
+  CLUSTER_GIT_REPO_BRANCH: "{{.CLUSTER_GIT_REPO_BRANCH}}"
   VAULT: "{{.VAULT}}"
 
 includes:
