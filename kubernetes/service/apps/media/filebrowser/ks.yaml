@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: openebs
-    - name: cloudflare-access-groups
+    - name: external-cloudflare-access-groups
   path: ./kubernetes/service/apps/media/filebrowser/app
   prune: true
   sourceRef:

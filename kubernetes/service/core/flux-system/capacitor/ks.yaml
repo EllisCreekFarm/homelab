@@ -32,7 +32,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: capacitor
-    - name: cloudflare-access-groups
+    - name: external-cloudflare-access-groups
   path: ./kubernetes/service/core/flux-system/capacitor/access
   prune: true
   sourceRef:

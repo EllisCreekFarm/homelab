@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app cloudflare-access
+  name: &app internal-ingress-nginx
   namespace: flux-system
 spec:
   targetNamespace: network
@@ -11,13 +11,14 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: cert-manager-tls
     - name: external-secrets-stores
-  path: ./kubernetes/service/core/network/cloudflare/access/app
+  path: ./kubernetes/service/core/network/internal/ingress-nginx
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: true
+  wait: false
   interval: 30m
   timeout: 5m
 ---
@@ -25,21 +26,19 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app cloudflare-access-tokens
+  name: &app blocky
   namespace: flux-system
 spec:
   targetNamespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: cloudflare-access
-  path: ./kubernetes/service/core/network/cloudflare/access/config/tokens
+  path: ./kubernetes/service/core/network/internal/blocky
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: true
+  wait: false
   interval: 30m
   timeout: 5m
 ---
@@ -47,39 +46,14 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app cloudflare-access-groups
+  name: &app k8s-gateway
   namespace: flux-system
 spec:
   targetNamespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: cloudflare-access-tokens
-  path: ./kubernetes/service/core/network/cloudflare/access/config/groups
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: true
-  interval: 30m
-  timeout: 5m
----
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app cloudflare-tunnel
-  namespace: flux-system
-spec:
-  targetNamespace: network
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-  dependsOn:
-    - name: external-secrets-stores
-    - name: external-dns
-  path: ./kubernetes/service/core/network/cloudflare/tunnel
+  path: ./kubernetes/service/core/network/internal/k8s-gateway
   prune: true
   sourceRef:
     kind: GitRepository

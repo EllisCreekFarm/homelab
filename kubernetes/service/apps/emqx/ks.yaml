@@ -35,7 +35,7 @@ spec:
   dependsOn:
     - name: emqx
     - name: external-secrets-stores
-    - name: cloudflare-access-groups
+    - name: external-cloudflare-access-groups
   path: ./kubernetes/service/apps/emqx/cluster
   prune: true
   sourceRef:

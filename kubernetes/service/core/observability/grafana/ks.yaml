@@ -37,8 +37,8 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: openebs
-    - name: cloudflare-access-groups
     - name: external-secrets-stores
+    - name: external-cloudflare-access-groups
     # - name: grafana-oncall
   path: ./kubernetes/service/core/observability/grafana/app
   prune: true

@@ -3,6 +3,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./helmrelease.yaml
-  - ../../../../../templates/gatus/external
-  - ../../../../../templates/cloudflare/zero-trust
+  - ./namespace.yaml
+  - ../../../templates/alerts
+  - ./ks.yaml
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: not-used
+      namespace: development
+    unsetOnly: true

@@ -3,14 +3,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app k8s-gateway
+  name: &app echo-server
   namespace: flux-system
 spec:
-  targetNamespace: network
+  targetNamespace: development
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/service/core/network/k8s-gateway/app
+  dependsOn:
+    - name: external-cloudflare-access-groups
+  path: ./kubernetes/service/apps/development/echo-server
   prune: true
   sourceRef:
     kind: GitRepository
@@ -18,3 +20,8 @@ spec:
   wait: false
   interval: 30m
   timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      CLOUDFLARE_SUBDOMAIN: echo
+      CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: oidc-admin

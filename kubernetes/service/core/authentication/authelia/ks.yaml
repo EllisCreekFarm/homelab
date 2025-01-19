@@ -11,10 +11,10 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: lldap
     - name: openebs
     - name: external-secrets-stores
-    - name: lldap
-    - name: cloudflare-access-groups
+    - name: external-cloudflare-access-groups
   path: ./kubernetes/service/core/authentication/authelia/app
   prune: true
   sourceRef:
