@@ -13,7 +13,7 @@ spec:
   dependsOn:
     - name: lldap
     - name: openebs
-    - name: external-secrets-stores
+    - name: onepassword-store
     - name: external-cloudflare-access-groups
   path: ./kubernetes/service/core/authentication/authelia/app
   prune: true

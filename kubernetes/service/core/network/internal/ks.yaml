@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-tls
-    - name: external-secrets-stores
+    - name: onepassword-store
   path: ./kubernetes/service/core/network/internal/ingress-nginx
   prune: true
   sourceRef:

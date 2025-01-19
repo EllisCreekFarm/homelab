@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-tls
-    - name: external-secrets-stores
+    - name: onepassword-store
     - name: external-cloudflare-tunnel
   path: ./kubernetes/service/core/network/external/ingress-nginx
   prune: true
@@ -35,7 +35,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: external-secrets-stores
+    - name: onepassword-store
   path: ./kubernetes/service/core/network/external/external-dns
   prune: true
   sourceRef:
@@ -58,7 +58,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-external-dns
-    - name: external-secrets-stores
+    - name: onepassword-store
   path: ./kubernetes/service/core/network/external/cloudflare-tunnel
   prune: true
   sourceRef:
@@ -80,7 +80,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: external-secrets-stores
+    - name: onepassword-store
   path: ./kubernetes/service/core/network/external/cloudflare-zero-trust/operator
   prune: true
   sourceRef:

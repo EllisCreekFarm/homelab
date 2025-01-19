@@ -12,7 +12,7 @@
 #       app.kubernetes.io/name: *app
 #   dependsOn:
 #     - name: cloudflare-access-groups
-#     - name: external-secrets-stores
+#     - name: onepassword-store
 #     - name: openebs
 #     - name: redis
 #   path: ./kubernetes/service/core/observability/grafana/oncall/app
@@ -37,7 +37,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: openebs
-    - name: external-secrets-stores
+    - name: onepassword-store
     - name: external-cloudflare-access-groups
     # - name: grafana-oncall
   path: ./kubernetes/service/core/observability/grafana/app
@@ -67,7 +67,7 @@ spec:
 #     labels:
 #       app.kubernetes.io/name: *app
 #   dependsOn:
-#     - name: external-secrets-stores
+#     - name: onepassword-store
 #     - name: grafana
 #   path: ./kubernetes/service/core/observability/grafana/oncall/initialize
 #   prune: true
