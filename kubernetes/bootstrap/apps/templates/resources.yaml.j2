@@ -9,7 +9,7 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: "cluster-tls"
+  name: cluster-tls
   namespace: cert-manager
   annotations:
     cert-manager.io/alt-names: '*.#{ get_env("CLOUDFLARE_DOMAIN") }#,#{ get_env("CLOUDFLARE_DOMAIN") }#'
