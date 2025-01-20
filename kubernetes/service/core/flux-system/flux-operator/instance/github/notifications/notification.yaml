@@ -6,7 +6,7 @@ metadata:
   name: github
 spec:
   type: github
-  address: "https://github.com/kadaan/homelab"
+  address: "${CLUSTER_GIT_REPO_URL}"
   secretRef:
     name: github-token-secret
 ---

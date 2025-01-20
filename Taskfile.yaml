@@ -10,7 +10,7 @@ vars:
   BOOTSTRAP_DIR: '{{.CLUSTER_DIR}}/bootstrap'
   SCRIPTS_DIR: '{{.ROOT_DIR}}/scripts'
   MAKEJINJA_SETTINGS: '{{.ROOT_DIR}}/makejinja.toml'
-  CLUSTER_GIT_REPO_URL: "https://github.com/kadaan/homelab"
+  CLUSTER_GIT_REPO_URL: "https://github.com/elliscreekfarm/homelab"
   CLUSTER_GIT_REPO_BRANCH:
     sh: "git rev-parse --abbrev-ref HEAD"
   VAULT:
