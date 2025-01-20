@@ -10,7 +10,7 @@ data:
     endpoints:
       - name: "${APP}"
         group: external
-        url: "https://${GATUS_SUBDOMAIN:-${APP}}.${CLOUDFLARE_DOMAIN}${GATUS_PATH:-/}"
+        url: "https://${GATUS_SUBDOMAIN:-${CLOUDFLARE_SUBDOMAIN:-${APP}}}.${CLOUDFLARE_DOMAIN}${GATUS_PATH:-/}"
         headers:
           "CF-Access-Client-Id": "$${cloudflareClientId}"
           "CF-Access-Client-Secret": "$${cloudflareSecretKey}"
