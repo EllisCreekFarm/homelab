@@ -8,6 +8,7 @@ on:
       - develop
     paths:
       - kubernetes/**
+  merge_group:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
