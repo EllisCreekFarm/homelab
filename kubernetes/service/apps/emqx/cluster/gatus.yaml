@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: emqx-mqtt-gatus-ep
+  labels:
+    gatus.io/enabled: "true"
+data:
+  config.yaml: |
+    endpoints:
+      - name: emqx-mqtt
+        group: infrastructure
+        url: tcp://emqx-listeners.emqx.svc.cluster.local:1883
+        interval: 15s
+        ui:
+          hide-url: true
+          hide-hostname: true
+        conditions:
+          - "[CONNECTED] == true"
+      - name: emqx-dashboard
+        group: external
+        url: "https://${CLOUDFLARE_SUBDOMAIN}.${CLOUDFLARE_DOMAIN}"
+        headers:
+          "CF-Access-Client-Id": "$${cloudflareClientId}"
+          "CF-Access-Client-Secret": "$${cloudflareSecretKey}"
+        interval: 15s
+        client:
+          dns-resolver: tcp://1.1.1.1:53
+        conditions:
+          - "[STATUS] == 200"
+      - name: emqx-websocket
+        group: external
+        url: "wss://${CLOUDFLARE_SUBDOMAIN}.${CLOUDFLARE_DOMAIN}:443/mqtt"
+        mqtt:
+          topic: "gatus"
+          username: "$${EMQX_MQTT_GATUS_USERNAME}"
+          password: "$${EMQX_MQTT_GATUS_PASSWORD}"
+        body: "gatus-test: {{ uuidv4 }}"
+        interval: 15s
+        conditions:
+          - "[CONNECTED] == true"

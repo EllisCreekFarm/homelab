@@ -1,0 +1,47 @@
+---
+upstreams:
+  groups:
+    default:
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.quad9.net/dns-query
+  timeout: 2s
+
+bootstrapDns:
+  - "tcp+udp:1.1.1.1"
+  - "tcp+udp:9.9.9.9"
+
+conditional:
+  fallbackUpstream: true
+  mapping:
+    ${CLOUDFLARE_DOMAIN}: "${K8S_GATEWAY_IP}"
+
+caching:
+  minTime: 1h
+  maxTime: 1h
+  prefetching: true
+  cacheTimeNegative: 1m
+
+prometheus:
+  enable: true
+  path: /metrics
+
+minTlsServeVersion: 1.3
+
+filtering:
+  queryTypes: [AAAA]
+
+fqdnOnly:
+  enable: false
+
+ports:
+  dns: 8053
+  http: 8080
+
+log:
+  level: debug
+  format: text
+  timestamp: true
+  privacy: false
+
+ecs:
+  useAsClient: true

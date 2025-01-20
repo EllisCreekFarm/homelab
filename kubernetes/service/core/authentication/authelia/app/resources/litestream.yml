@@ -1,0 +1,14 @@
+dbs:
+  - path: "/data/db.sqlite3"
+    replicas:
+      - name: "r2"
+        type: "s3"
+        endpoint: "$${BACKBLAZE_R2_ENDPOINT}"
+        bucket: "$${BACKBLAZE_R2_BUCKET}"
+        path: "litestream/authelia"
+        force-path-style: true
+        retention: "168h"
+        validation-interval: "24h"
+        age:
+          recipients: ["$${LITESTREAM_AGE_PUBKEY}"]
+          identities: ["$${LITESTREAM_AGE_SECRET}"]

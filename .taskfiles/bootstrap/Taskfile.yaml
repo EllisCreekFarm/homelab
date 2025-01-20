@@ -1,0 +1,192 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+includes:
+  common: ../common
+
+tasks:
+
+  cluster:
+    desc: Bootstrap Talos
+    dir: '{{.CLUSTER_DIR}}'
+    cmds:
+      - defer: rm -rf '{{.TEMP_DIR}}'
+      - task: common:talosctl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - task: cluster_bootstrap
+        vars:
+          TALOS_CFG: '{{.TALOS_CFG}}'
+          TALOS_SECRETS: '{{.TALOS_SECRETS}}'
+          TEMP_DIR: '{{.TEMP_DIR}}'
+    vars:
+      TALOS_DIR: '{{.BOOTSTRAP_DIR}}/talos'
+      TALOS_CFG: '{{.TALOS_DIR}}/talconfig.yaml'
+      TEMP_DIR:
+        sh: mktemp -d
+      TALOS_SECRETS: '{{.TEMP_DIR}}/.talos_secrets'
+    preconditions:
+      - test -d '{{.CLUSTER_DIR}}'
+      - which op
+
+  cluster_bootstrap:
+    internal: true
+    dotenv:
+      - '{{.TALOS_SECRETS}}'
+    cmds:
+      - talhelper gencommand apply --config-file '{{.TALOS_CFG}}' --out-dir '{{.TEMP_DIR}}' --extra-flags '--insecure' | bash
+      - until talhelper gencommand bootstrap --config-file '{{.TALOS_CFG}}' --out-dir '{{.TEMP_DIR}}' | bash; do sleep 10; done
+      - until talhelper gencommand kubeconfig --config-file '{{.TALOS_CFG}}' --out-dir '{{.TEMP_DIR}}' --extra-flags '{{.TEMP_DIR}} --force' | bash; do sleep 10; done
+      - task: apps_bootstrap
+        vars:
+          TALOS_SECRETS: '{{.TALOS_SECRETS}}'
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - talosctl health --server=false --talosconfig '{{.TEMP_DIR}}/talosconfig'
+      - task: zfs-pool-cluster
+        vars:
+          TALOS_SECRETS: '{{.TALOS_SECRETS}}'
+          TEMP_DIR: '{{.TEMP_DIR}}'
+    requires:
+      vars:
+        - TALOS_CFG
+        - TALOS_SECRETS
+        - TEMP_DIR
+    preconditions:
+      - which talhelper talosctl
+      - test -f "{{.TALOS_CFG}}"
+
+  apps:
+    desc: Bootstrap Apps
+    cmds:
+      - defer: rm -rf '{{.TEMP_DIR}}'
+      - task: common:kubectl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - task: apps_bootstrap
+        vars:
+          TALOS_SECRETS: '{{.TALOS_SECRETS}}'
+          TEMP_DIR: '{{.TEMP_DIR}}'
+    vars:
+      TEMP_DIR:
+        sh: mktemp -d
+      TALOS_SECRETS: '{{.TEMP_DIR}}/.talos_secrets'
+    preconditions:
+      - test -d '{{.CLUSTER_DIR}}'
+      - which op
+
+  apps_bootstrap:
+    internal: true
+    dotenv:
+      - '{{.TALOS_SECRETS}}'
+    env:
+      KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'
+    cmds:
+      - until kubectl wait nodes --for=condition=Ready=False --all --timeout=10m; do sleep 5; done
+      - makejinja --input '{{.BOOTSTRAP_DIR}}/apps/templates/resources.yaml.j2' --output /dev/stdout | kubectl apply --server-side --filename -
+      - helmfile --file '{{.BOOTSTRAP_DIR}}/apps/helmfile.yaml.j2' apply --skip-diff-on-install --suppress-diff
+      - until kubectl wait nodes --for=condition=Ready --all --timeout=10m; do sleep 5; done
+    requires:
+      vars:
+        - TEMP_DIR
+        - TALOS_SECRETS
+    preconditions:
+      - talosctl config info --talosconfig '{{.TEMP_DIR}}/talosconfig'
+      - test -f '{{.TEMP_DIR}}/kubeconfig'
+      - test -f '{{.BOOTSTRAP_DIR}}/apps/helmfile.yaml.j2'
+      - test -f '{{.BOOTSTRAP_DIR}}/apps/templates/resources.yaml.j2'
+      - which helmfile kubectl
+
+  zfs-pool-cluster:
+    internal: true
+    cmds:
+      - for: { var: HOSTNAMES }
+        task: zfs-pool-node
+        vars:
+          HOSTNAME: "{{.ITEM}}"
+          TALOS_SECRETS: "{{.TALOS_SECRETS}}"
+          TEMP_DIR: "{{.TEMP_DIR}}"
+    vars:
+      HOSTNAMES:
+        sh: yq --raw-output '[.nodes[].hostname] | join(" ")' "{{.BOOTSTRAP_DIR}}/talos/talconfig.yaml"
+    requires:
+      vars:
+        - TALOS_SECRETS
+        - TEMP_DIR
+    preconditions:
+      - which yq
+
+  zfs-pool-node:
+    internal: true
+    dotenv:
+      - "{{.TALOS_SECRETS}}"
+    env:
+      KUBECONFIG: '{{ .KUBECONFIG }}'
+    cmds:
+      - "kubectl run zfs-shell --image debian --overrides='{\"apiVersion\": \"v1\", \"spec\": {\"hostIPC\": true, \"hostNetwork\": true, \"hostPID\": true, \"nodeSelector\": { \"kubernetes.io/hostname\": \"{{.HOSTNAME}}\" }}}' --privileged --wait --command -- sleep infinity"
+      - defer: "kubectl delete pod/zfs-shell --wait"
+      - until kubectl wait pod zfs-shell --for=condition=Ready --all --timeout=10m; do sleep 5; done
+      - task: zfs-pool-create
+        vars:
+          KUBECONFIG: '{{ .KUBECONFIG }}'
+          TALOS_SECRETS: "{{.TALOS_SECRETS}}"
+    vars:
+      KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'
+    requires:
+      vars:
+        - HOSTNAME
+        - TALOS_SECRETS
+        - TEMP_DIR
+    preconditions:
+      - talosctl config info --talosconfig '{{.TEMP_DIR}}/talosconfig'
+      - test -f '{{.TEMP_DIR}}/kubeconfig'
+      - which sed kubectl
+
+  zfs-pool-create:
+    internal: false
+    dir: '{{.CLUSTER_DIR}}'
+    dotenv:
+      - "{{.TALOS_SECRETS}}"
+    env:
+      KUBECONFIG: '{{.KUBECONFIG}}'
+    cmds:
+      - kubectl exec pod/zfs-shell -- nsenter --mount=/proc/1/ns/mnt -- /usr/local/sbin/zpool create -m legacy -f "$ZFS_POOL_NAME" "$ZFS_POOL_DISKS"
+      - until kubectl exec pod/zfs-shell -- nsenter --mount=/proc/1/ns/mnt -- /usr/local/sbin/zpool status | grep -qE "${ZFS_POOL_NAME}[ ]+ONLINE"; do sleep 5; done
+    status:
+      - KUBECONFIG={{.KUBECONFIG}} kubectl exec pod/zfs-shell -- nsenter --mount=/proc/1/ns/mnt -- /usr/local/sbin/zpool status 2>&1 | grep -qE "${ZFS_POOL_NAME}[ ]+ONLINE" || return 0 && return 1
+    requires:
+      vars:
+        - KUBECONFIG
+        - TALOS_SECRETS
+    preconditions:
+      - test -f '{{.KUBECONFIG}}'
+      - which sed kubectl
+
+  onepassword-connect-credentials:
+    desc: Bootstrap the 1Password Connect credentials
+    deps:
+      - task: onepassword-connect-server-create
+        vars:
+          ONEPASSWORD_CONNECT_CREDENTIALS_FILE: "{{.ONEPASSWORD_CONNECT_CREDENTIALS_FILE}}"
+          ONEPASSWORD_CREDENTIALS_FILE: "{{.ONEPASSWORD_CREDENTIALS_FILE}}"
+    cmds:
+      - 'jq -n "{credentials: \$ARGS.named}" --arg json "$(cat {{.ONEPASSWORD_CREDENTIALS_FILE}})" --arg token "$(op connect token create Kubernetes --server ''{{.VAULT}}'' --vaults ''{{.VAULT}},rw'')" > {{.ONEPASSWORD_CONNECT_CREDENTIALS_FILE}}'
+      - chmod 600 '{{.ONEPASSWORD_CONNECT_CREDENTIALS_FILE}}'
+      - rm -f '{{.ONEPASSWORD_CREDENTIALS_FILE}}'
+    vars:
+      ONEPASSWORD_CONNECT_CREDENTIALS_FILE: '{{.DEVBOX_PROJECT_ROOT}}/1password-connect-credentials.json'
+      ONEPASSWORD_CREDENTIALS_FILE: '{{.DEVBOX_PROJECT_ROOT}}/1password-credentials.json'
+    status:
+      - test -f '{{.ONEPASSWORD_CONNECT_CREDENTIALS_FILE}}'
+    preconditions:
+      - which op jq
+
+  onepassword-connect-server-create:
+    internal: true
+    cmds:
+      - op connect server create '{{.VAULT}}' --vaults '{{.VAULT}}'
+      - chmod 600 '{{.ONEPASSWORD_CREDENTIALS_FILE}}'
+    status:
+      - test -f '{{.ONEPASSWORD_CONNECT_CREDENTIALS_FILE}}'
+    preconditions:
+      - which op jq

@@ -1,0 +1,13 @@
+---
+apiVersion: cloudflare.zelic.io/v1alpha1
+kind: CloudflareServiceToken
+metadata:
+  name: gatus
+spec:
+  name: gatus
+  template:
+    metadata:
+      name: gatus-service-token
+      annotations:
+        reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+        reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "observability"

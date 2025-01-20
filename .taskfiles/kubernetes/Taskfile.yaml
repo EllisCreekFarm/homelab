@@ -1,0 +1,98 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+vars:
+  KUBECONFORM_SCRIPT: "{{.SCRIPTS_DIR}}/kubernetes/kubeconform.sh"
+
+includes:
+  common: ../common
+
+tasks:
+
+  apply-ks:
+    desc: Apply a Flux KS for a cluster [PATH=required]
+    cmds:
+      - defer: rm -rf '{{.TEMP_DIR}}'
+      - task: common:kubectl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - task: apply-ks-internal
+        vars:
+          KUBECONFIG: '{{.KUBECONFIG}}'
+          PATH: '{{.PATH}}'
+    vars:
+      TEMP_DIR:
+        sh: mktemp -d
+    preconditions:
+      - test -f {{.CLUSTER_DIR}}/service/{{.PATH}}/ks.yaml
+      - which flux kubectl yq
+
+  apply-ks-internal:
+    internal: true
+    cmd: >
+      flux build --namespace flux-system ks {{base .PATH}}
+      --kustomization-file {{.CLUSTER_DIR}}/apps/{{.PATH}}/ks.yaml
+      --path {{.CLUSTER_DIR}}/apps/{{.PATH}}{{- if contains "not found" .KS }}--dry-run \{{ end }}
+      | yq 'with(select(.apiVersion == "kustomize.toolkit.fluxcd.io/v1" and .kind == "Kustomization"); .metadata.namespace = "flux-system")' -
+      | kubectl apply --server-side --field-manager=kustomize-controller --filename -
+    env:
+      KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'
+    vars:
+      KS:
+        sh: flux --namespace flux-system get kustomizations {{base .PATH}} 2>&1
+    requires:
+      vars:
+        - KUBECONFIG
+        - PATH
+
+  reconcile:
+    desc: Force update Flux to pull in changes from your Git repository
+    cmds:
+      - defer: rm -rf '{{.TEMP_DIR}}'
+      - task: common:kubectl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - flux --namespace flux-system reconcile kustomization flux-system --with-source
+    env:
+      KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'
+    vars:
+      TEMP_DIR:
+        sh: mktemp -d
+    preconditions:
+      - which flux
+
+  kubeconform:
+    desc: Validate Kubernetes manifests with kubeconform
+    cmd: bash '{{.KUBECONFORM_SCRIPT}}' '{{.CLUSTER_DIR}}'
+    preconditions:
+      - test -f '{{.KUBECONFORM_SCRIPT}}'
+      - test -d '{{.CLUSTER_DIR}}'
+      - which kubeconform
+
+  resources:
+    desc: Gather common resources in your cluster, useful when asking for support
+    cmds:
+      - defer: rm -rf '{{.TEMP_DIR}}'
+      - task: common:kubectl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - for: { var: RESOURCE }
+        cmd: kubectl get {{.ITEM}} {{.CLI_ARGS | default "-A"}}
+    env:
+      KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'
+    vars:
+      TEMP_DIR:
+        sh: mktemp -d
+      RESOURCE: >-
+        nodes
+        gitrepositories
+        kustomizations
+        helmrepositories
+        helmreleases
+        certificates
+        certificaterequests
+        ingresses
+        pods
+    preconditions:
+      - which kubectl

@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: gatus-rules
+spec:
+  groups:
+    - name: gatus-endpoint
+      rules:
+        - alert: EndpointUnreachable
+          expr: |
+            sum(rate(gatus_results_total{success="false"}[30s])) by (group, name, type) / sum(rate(gatus_results_total[30s])) by (group, name, type) > 0
+          for: 1m
+          labels:
+            source: gatus
+            severity: critical
+          annotations:
+            description:
+              "The {{ $labels.group }} {{ $labels.type }} endpoint {{ $labels.name }} has been unreachable
+              for more than one minute."
+            summary: "{{ $labels.group }}.{{ $labels.name }}.{{ $labels.type }} is unreachable."
+            gatus_url: "https://${CLOUDFLARE_SUBDOMAIN}.${CLOUDFLARE_DOMAIN}/endpoints/{{$labels.group}}_{{$labels.name}}"

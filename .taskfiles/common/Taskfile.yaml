@@ -1,0 +1,73 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+
+  talosctl_init:
+    internal: true
+    silent: true
+    cmds:
+      - '{{if eq .TALOS_SECRETS_EXISTS "false"}}op inject --in-file={{.BOOTSTRAP_DIR}}/bootstrap.env --out-file="{{.TALOS_SECRETS}}" > /dev/null{{end}}'
+      - task: talos_genconfig
+        vars:
+          TALOS_CFG: '{{.TALOS_CFG}}'
+          TALOS_DIR: '{{.TALOS_DIR}}'
+          TALOS_SECRETS: '{{.TALOS_SECRETS}}'
+          TEMP_DIR: '{{.TEMP_DIR}}'
+    vars:
+      TALOS_DIR: '{{.BOOTSTRAP_DIR}}/talos'
+      TALOS_CFG: '{{.TALOS_DIR}}/talconfig.yaml'
+      TALOS_SECRETS: '{{.TEMP_DIR}}/.talos_secrets'
+      TALOS_SECRETS_EXISTS:
+        sh: test -f '{{.TALOS_SECRETS}}' && echo true || echo false
+    requires:
+      vars:
+        - TEMP_DIR
+    preconditions:
+      - test -d '{{ .BOOTSTRAP_DIR }}'
+      - test -d '{{ .TALOS_DIR }}'
+
+  talos_genconfig:
+    internal: true
+    silent: true
+    dotenv:
+      - '{{.TALOS_SECRETS}}'
+    cmds:
+      - '{{if eq .TALCONFIG_EXISTS "false"}}talhelper genconfig --config-file "{{.TALOS_CFG}}" --secret-file "{{.TALOS_DIR}}/talsecret.yaml" --out-dir "{{.TEMP_DIR}}" > /dev/null{{end}}'
+    vars:
+      TALCONFIG_EXISTS:
+        sh: test -f {{.TEMP_DIR}}/talconfig && echo true || echo false
+    requires:
+      vars:
+        - TALOS_CFG
+        - TALOS_DIR
+        - TALOS_SECRETS
+        - TEMP_DIR
+    preconditions:
+      - which talhelper
+      - test -d '{{ .TALOS_DIR }}'
+
+  kubectl_init:
+    internal: true
+    silent: true
+    env:
+      VAULT: "{{.VAULT}}"
+    cmds:
+      - task: talosctl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - '{{if eq .KUBECONFIG_EXISTS "false"}}until talhelper gencommand kubeconfig --config-file "{{.TALOS_CFG}}" --out-dir "{{.TEMP_DIR}}" --extra-flags "{{.TEMP_DIR}} --force" | bash; do sleep 10; done{{end}}'
+    vars:
+      TALOS_DIR: '{{.BOOTSTRAP_DIR}}/talos'
+      TALOS_CFG: '{{.TALOS_DIR}}/talconfig.yaml'
+      TALOS_SECRETS: '{{.TEMP_DIR}}/.talos_secrets'
+      KUBECONFIG_EXISTS:
+        sh: test -f {{.TEMP_DIR}}/kubeconfig && echo true || echo false
+    requires:
+      vars:
+        - TEMP_DIR
+    preconditions:
+      - which talhelper
+      - test -d '{{ .BOOTSTRAP_DIR }}'
+      - test -d '{{ .TALOS_DIR }}'

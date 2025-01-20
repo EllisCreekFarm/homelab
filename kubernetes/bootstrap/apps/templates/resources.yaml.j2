@@ -1,0 +1,76 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.3/namespace-v1.json
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+#% if get_env('INGRESS_NGINX_TLS_CRT') != "" and get_env('INGRESS_NGINX_TLS_KEY') != "" %#
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "cluster-tls"
+  namespace: cert-manager
+  annotations:
+    cert-manager.io/alt-names: '*.#{ get_env("CLOUDFLARE_DOMAIN") }#,#{ get_env("CLOUDFLARE_DOMAIN") }#'
+    cert-manager.io/certificate-name: "#{ get_env('CLOUDFLARE_DOMAIN').replace('.', '-') }#"
+    cert-manager.io/common-name: "#{ get_env('CLOUDFLARE_DOMAIN') }#"
+    cert-manager.io/ip-sans: ""
+    cert-manager.io/issuer-group: ""
+    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/issuer-name: letsencrypt-production
+    cert-manager.io/uri-sans: ""
+  labels:
+    controller.cert-manager.io/fao: "true"
+type: kubernetes.io/tls
+data:
+  tls.crt: "#{ get_env('INGRESS_NGINX_TLS_CRT') }#"
+  tls.key: "#{ get_env('INGRESS_NGINX_TLS_KEY') }#"
+#% endif %#
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.3/namespace-v1.json
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secrets
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onepassword-connect-secret
+  namespace: secrets
+stringData:
+  onepassword-credentials.json: "#{ get_env('OP_CREDENTIALS_JSON') | b64encode }#"
+  token: "#{ get_env('OP_CONNECT_TOKEN') }#"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flux-system
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-deploy-key
+  namespace: flux-system
+stringData:
+  username: "#{ get_env('FLUX_GITHUB_REPOSITORY_USERNAME') }#"
+  password: "#{ get_env('FLUX_GITHUB_REPOSITORY_READ_TOKEN') }#"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-settings
+  namespace: flux-system
+data:
+  CLOUDFLARE_ACME_EMAIL: "#{ get_env('CLOUDFLARE_ACME_EMAIL') }#"
+  CLOUDFLARE_DOMAIN: "#{ get_env('CLOUDFLARE_DOMAIN') }#"
+  CLOUDFLARE_TUNNEL_ID: "#{ get_env('CLOUDFLARE_TUNNEL_ID') }#"
+  CLUSTER_DISPLAY_NAME: "#{ get_env('CLUSTER_DISPLAY_NAME') }#"
+  CLUSTER_LDAP_BASE_DN: "#{ get_env('CLOUDFLARE_DOMAIN') | domain2dn }#"
+  CLUSTER_TZ: "#{ get_env('CLUSTER_TZ') }#"
+  CLUSTER_GIT_REPO_URL: "#{ get_env('CLUSTER_GIT_REPO_URL') }#"
+  CLUSTER_GIT_REPO_REF: "#{ get_env('CLUSTER_GIT_REPO_REF') }#"
+  K8S_GATEWAY_IP: 192.168.2.82
+  ZFS_POOL_NAME: "#{ get_env('ZFS_POOL_NAME') }#"
+  ONEPASSWORD_VAULT: "#{ get_env('VAULT') }#"

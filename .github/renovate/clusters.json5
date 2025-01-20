@@ -1,0 +1,16 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "description": ["PRs for develop cluster"],
+      "matchFileNames": ["**/kubernetes/**"],
+      "matchBaseBranches": ["develop"],
+      "additionalBranchPrefix": "develop-"
+    },
+    {
+      "description": ["PRs for production cluster"],
+      "matchBaseBranches": ["master"],
+      "additionalBranchPrefix": "production-"
+    }
+  ]
+}
