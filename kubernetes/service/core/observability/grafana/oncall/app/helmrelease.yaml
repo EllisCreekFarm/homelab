@@ -32,7 +32,7 @@ spec:
           engine:
             image: &image
               repository: grafana/oncall
-              tag: v1.13.11@sha256:159b6b836fed0c9b61ff4014ad65c05b56500f31283c42de97dbe58679d33391
+              tag: v1.14.1@sha256:170bf08dee6103ed65f8e0ede86ce24645bce4ccf77ad7aabfd8ad53ec72f11e
             env: &env
               BASE_URL: "http://grafana-oncall.observability.svc.cluster.local:8080"
               DJANGO_SETTINGS_MODULE: settings.helm
