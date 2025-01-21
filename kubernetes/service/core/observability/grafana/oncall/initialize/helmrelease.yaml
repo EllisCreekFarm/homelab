@@ -36,7 +36,7 @@ spec:
           app:
             image:
               repository: alpine/curl
-              tag: 8.10.0@sha256:91168ebe05143005b883244e753f46a1972fa27cd7d4478258185cbefe3e4f1d
+              tag: 8.11.1@sha256:21307f80a0ae6d4e49b67028539182ac0aba2948a91aa2d2d98cdfd2f5f9694d
             command: [ "/scripts/initialize.sh" ]
             env:
               GRAFANA_HOST: grafana.observability.svc.cluster.local
