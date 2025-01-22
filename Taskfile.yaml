@@ -76,11 +76,11 @@ tasks:
       TEMP_DIR:
         sh: mktemp -d
 
-  flux-local-build:
+  flux-local:
     desc: Command line utility for inspecting a local flux repository
     silent: true
     cmds:
-      - flux-local build all {{.CLI_ARGS}} '{{ .CLUSTER_DIR }}/flux'
+      - flux-local {{.CLI_ARGS}}
 
   flux:
     desc: Command line utility for assembling Kubernetes CD pipelines the GitOps way
