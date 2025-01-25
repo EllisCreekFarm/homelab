@@ -1,28 +1,3 @@
-# ---
-# # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-# apiVersion: kustomize.toolkit.fluxcd.io/v1
-# kind: Kustomization
-# metadata:
-#   name: &app grafana-oncall
-#   namespace: flux-system
-# spec:
-#   targetNamespace: observability
-#   commonMetadata:
-#     labels:
-#       app.kubernetes.io/name: *app
-#   dependsOn:
-#     - name: cloudflare-access-groups
-#     - name: onepassword-store
-#     - name: openebs
-#     - name: redis
-#   path: ./kubernetes/service/core/observability/grafana/oncall/app
-#   prune: true
-#   sourceRef:
-#     kind: GitRepository
-#     name: flux-system
-#   wait: true
-#   interval: 30m
-#   timeout: 5m
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -31,7 +6,6 @@ metadata:
   name: &app grafana
   namespace: flux-system
 spec:
-  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -39,42 +13,18 @@ spec:
     - name: openebs
     - name: onepassword-store
     - name: external-cloudflare-access-groups
-    # - name: grafana-oncall
-  path: ./kubernetes/service/core/observability/grafana/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: true
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/core/observability/grafana/app
   postBuild:
     substitute:
       APP: *app
       CLOUDFLARE_SUBDOMAIN: &subdomain monitoring
       CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: oidc-admin
       GATUS_SUBDOMAIN: *subdomain
-# ---
-# # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-# apiVersion: kustomize.toolkit.fluxcd.io/v1
-# kind: Kustomization
-# metadata:
-#   name: &app grafana-oncall-initialize
-#   namespace: flux-system
-# spec:
-#   targetNamespace: observability
-#   commonMetadata:
-#     labels:
-#       app.kubernetes.io/name: *app
-#   dependsOn:
-#     - name: onepassword-store
-#     - name: grafana
-#   path: ./kubernetes/service/core/observability/grafana/oncall/initialize
-#   prune: true
-#   sourceRef:
-#     kind: GitRepository
-#     name: flux-system
-#   wait: true
-#   interval: 30m
-#   timeout: 5m
-#   force: true
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: observability
+  timeout: 5m
+  wait: true

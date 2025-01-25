@@ -6,26 +6,26 @@ metadata:
   name: &app kube-prometheus-stack
   namespace: flux-system
 spec:
-  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: openebs
     - name: onepassword-store
+  interval: 30m
   path: ./kubernetes/service/core/observability/kube-prometheus-stack/app
+  postBuild:
+    substitute:
+      APP: *app
+      CLOUDFLARE_ALERTMANAGER_SUBDOMAIN: alerts
+      CLOUDFLARE_PROMETHEUS_SUBDOMAIN: metrics
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+  targetNamespace: observability
   timeout: 5m
-  postBuild:
-    substitute:
-      APP: *app
-      CLOUDFLARE_PROMETHEUS_SUBDOMAIN: metrics
-      CLOUDFLARE_ALERTMANAGER_SUBDOMAIN: alerts
+  wait: false
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -34,27 +34,27 @@ metadata:
   name: &app kube-prometheus-stack-prometheus-access
   namespace: flux-system
 spec:
-  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: kube-prometheus-stack
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/core/observability/kube-prometheus-stack/access
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: false
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/core/observability/kube-prometheus-stack/access
   postBuild:
     substitute:
       APP: prometheus
       CLOUDFLARE_SUBDOMAIN: &subdomain metrics
       CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: oidc-admin
       GATUS_SUBDOMAIN: *subdomain
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: observability
+  timeout: 5m
+  wait: false
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -63,24 +63,24 @@ metadata:
   name: &app kube-prometheus-stack-alertmanager-access
   namespace: flux-system
 spec:
-  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: kube-prometheus-stack
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/core/observability/kube-prometheus-stack/access
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: false
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/core/observability/kube-prometheus-stack/access
   postBuild:
     substitute:
       APP: alertmanager
       CLOUDFLARE_SUBDOMAIN: &subdomain alerts
       CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: oidc-admin
       GATUS_SUBDOMAIN: *subdomain
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: observability
+  timeout: 5m
+  wait: false

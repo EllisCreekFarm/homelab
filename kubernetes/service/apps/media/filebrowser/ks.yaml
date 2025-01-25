@@ -6,23 +6,23 @@ metadata:
   name: &app filebrowser
   namespace: flux-system
 spec:
-  targetNamespace: media
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: openebs
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/apps/media/filebrowser/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: true
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/apps/media/filebrowser/app
   postBuild:
     substitute:
       APP: *app
       CLOUDFLARE_SUBDOMAIN: &subdomain files
       GATUS_SUBDOMAIN: *subdomain
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: media
+  timeout: 5m
+  wait: true

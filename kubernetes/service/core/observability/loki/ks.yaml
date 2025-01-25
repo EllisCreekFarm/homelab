@@ -6,20 +6,20 @@ metadata:
   name: &app loki
   namespace: flux-system
 spec:
-  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: openebs
+  interval: 30m
   path: ./kubernetes/service/core/observability/loki/app
+  postBuild:
+    substitute:
+      APP: *app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+  targetNamespace: observability
   timeout: 5m
-  postBuild:
-    substitute:
-      APP: *app
+  wait: false

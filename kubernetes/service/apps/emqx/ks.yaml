@@ -6,20 +6,20 @@ metadata:
   name: &app emqx
   namespace: flux-system
 spec:
-  targetNamespace: emqx
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager
+  interval: 30m
   path: ./kubernetes/service/apps/emqx/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: true
-  interval: 30m
+  targetNamespace: emqx
   timeout: 5m
+  wait: true
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -28,7 +28,6 @@ metadata:
   name: &app emqx-cluster
   namespace: flux-system
 spec:
-  targetNamespace: emqx
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -36,16 +35,17 @@ spec:
     - name: emqx
     - name: onepassword-store
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/apps/emqx/cluster
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: true
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/apps/emqx/cluster
   postBuild:
     substitute:
       APP: emqx
       CLOUDFLARE_SUBDOMAIN: pub-sub
       CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: oidc-admin
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: emqx
+  timeout: 5m
+  wait: true

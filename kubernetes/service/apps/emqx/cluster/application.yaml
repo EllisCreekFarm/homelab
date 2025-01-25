@@ -22,4 +22,4 @@ spec:
         - everyone: true
       require:
         - country:
-          - US
+            - US

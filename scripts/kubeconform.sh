@@ -50,17 +50,12 @@ function validate() {
 }
 
 function run() {
-    local root_dir
-    if ! root_dir="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"; then
-        echo "Failed to determine root dir"
-        exit 1
-    fi
-    if [[ "${DEVBOX_SHELL_ENABLED:-0}" != "1" || "$DEVBOX_PROJECT_ROOT" != "$root_dir" ]]; then
-        devbox run --config "${root_dir}" kubeconform "$@"
+    if [[ "${DEVBOX_SHELL_ENABLED:-0}" != "1" ]]; then
+        devbox run kubeconform "$@"
         return $?
     fi
 
-    validate "$(dirname "$(dirname "$root_dir")")/kubernetes"
+    validate "$DEVBOX_PROJECT_ROOT/kubernetes"
 }
 
 run "$@"

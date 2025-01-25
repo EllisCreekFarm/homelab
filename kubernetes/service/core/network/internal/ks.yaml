@@ -6,21 +6,21 @@ metadata:
   name: &app internal-ingress-nginx
   namespace: flux-system
 spec:
-  targetNamespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-tls
     - name: onepassword-store
+  interval: 30m
   path: ./kubernetes/service/core/network/internal/ingress-nginx
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+  targetNamespace: network
   timeout: 5m
+  wait: false
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -29,18 +29,18 @@ metadata:
   name: &app blocky
   namespace: flux-system
 spec:
-  targetNamespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  interval: 30m
   path: ./kubernetes/service/core/network/internal/blocky
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+  targetNamespace: network
   timeout: 5m
+  wait: false
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -49,15 +49,15 @@ metadata:
   name: &app k8s-gateway
   namespace: flux-system
 spec:
-  targetNamespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  interval: 30m
   path: ./kubernetes/service/core/network/internal/k8s-gateway
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+  targetNamespace: network
   timeout: 5m
+  wait: false

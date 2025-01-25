@@ -6,7 +6,6 @@ metadata:
   name: &app authelia
   namespace: flux-system
 spec:
-  targetNamespace: authentication
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -15,18 +14,19 @@ spec:
     - name: openebs
     - name: onepassword-store
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/core/authentication/authelia/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: false
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/core/authentication/authelia/app
   postBuild:
     substitute:
       APP: *app
       CLOUDFLARE_SUBDOMAIN: &subdomain auth
-      CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: authelia
       CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_DECISION: non_identity
+      CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: authelia
       GATUS_SUBDOMAIN: *subdomain
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: authentication
+  timeout: 5m
+  wait: false
