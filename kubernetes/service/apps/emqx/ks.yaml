@@ -4,7 +4,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app emqx
-  namespace: flux-system
+  namespace: &namespace emqx
 spec:
   commonMetadata:
     labels:
@@ -17,7 +17,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: emqx
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: true
 ---
@@ -26,15 +27,20 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app emqx-cluster
-  namespace: flux-system
+  namespace: &namespace emqx
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../flux/components/cloudflare/zero-trust
   dependsOn:
     - name: emqx
+      namespace: emqx
     - name: onepassword-store
+      namespace: secrets
     - name: external-cloudflare-access-groups
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/apps/emqx/cluster
   postBuild:
@@ -46,6 +52,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: emqx
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: true

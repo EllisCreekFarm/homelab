@@ -14,6 +14,14 @@ spec:
         name: bjw-s
         kind: HelmRepository
         namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
   values:
     controllers:
       blocky:
@@ -82,13 +90,13 @@ spec:
         fsGroupChangePolicy: "OnRootMismatch"
         seccompProfile: {type: RuntimeDefault}
     persistence:
-      config:
+      config-file:
         type: configMap
-        name: blocky-config
+        name: blocky-configmap
         advancedMounts:
           blocky:
             main:
-              - path: /app/config.yml
+              - path: /app/config.yaml
                 subPath: config.yaml
                 readOnly: true
     serviceMonitor:

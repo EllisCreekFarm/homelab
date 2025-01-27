@@ -4,15 +4,21 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app grafana
-  namespace: flux-system
+  namespace: &namespace observability
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../../flux/components/gatus/external
+    - ../../../../../flux/components/cloudflare/zero-trust
   dependsOn:
     - name: openebs
+      namespace: openebs-system
     - name: onepassword-store
+      namespace: secrets
     - name: external-cloudflare-access-groups
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/core/observability/grafana/app
   postBuild:
@@ -25,6 +31,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: observability
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: true

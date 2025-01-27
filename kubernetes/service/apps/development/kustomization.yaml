@@ -2,15 +2,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: development
 resources:
-  - ./namespace.yaml
-  - ../../../templates/alerts
   - ./ks.yaml
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: not-used
-      namespace: development
-    unsetOnly: true
+components:
+  - ../../../flux/components/alerts
+  - ../../../flux/components/namespace

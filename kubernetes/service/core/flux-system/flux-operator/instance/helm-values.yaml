@@ -33,7 +33,8 @@ instance:
         target:
           kind: Deployment
           name: (kustomize-controller|helm-controller|source-controller)
-      - patch: |
+      - # Increase the memory limits
+        patch: |
           apiVersion: apps/v1
           kind: Deployment
           metadata:

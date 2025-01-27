@@ -2,3 +2,7 @@
 providerRegex: ^k8s-\d$
 bypassDnsResolution: true
 replicas: 1
+metrics:
+  enable: true
+  serviceMonitor:
+    enabled: true

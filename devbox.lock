@@ -762,6 +762,34 @@
         }
       }
     },
+    "patch@2.7.6": {
+      "last_modified": "2025-01-25T23:17:58Z",
+      "resolved": "github:NixOS/nixpkgs/b582bb5b0d7af253b05d58314b85ab8ec46b8d19#patch",
+      "source": "devbox-search",
+      "version": "2.7.6",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/h681ir0m8v2i0psmcfrl85cdqxi90w7c-patch-2.7.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/h681ir0m8v2i0psmcfrl85cdqxi90w7c-patch-2.7.6"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/5d20l54js1snzsbkmhz88mz7ranfgr9b-patch-2.7.6",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/5d20l54js1snzsbkmhz88mz7ranfgr9b-patch-2.7.6"
+        }
+      }
+    },
     "pre-commit@4.0.1": {
       "last_modified": "2024-11-28T07:51:56Z",
       "resolved": "github:NixOS/nixpkgs/226216574ada4c3ecefcbbec41f39ce4655f78ef#pre-commit",

@@ -1,135 +1,150 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app external-ingress-nginx
-  namespace: flux-system
+  namespace: &namespace network
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-tls
+      namespace: cert-manager
     - name: onepassword-store
+      namespace: secrets
     - name: external-cloudflare-tunnel
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/core/network/external/ingress-nginx
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: network
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: false
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app external-external-dns
-  namespace: flux-system
+  namespace: &namespace network
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: onepassword-store
+      namespace: secrets
   interval: 30m
   path: ./kubernetes/service/core/network/external/external-dns
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   targetNamespace: network
   timeout: 5m
   wait: true
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app external-cloudflare-tunnel
-  namespace: flux-system
+  namespace: &namespace network
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-external-dns
+      namespace: network
     - name: onepassword-store
+      namespace: secrets
   interval: 30m
   path: ./kubernetes/service/core/network/external/cloudflare-tunnel
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: network
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: false
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app external-cloudflare-zero-trust-operator
-  namespace: flux-system
+  namespace: &namespace network
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: onepassword-store
+      namespace: secrets
   interval: 30m
   path: ./kubernetes/service/core/network/external/cloudflare-zero-trust/operator
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: network
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: true
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app external-cloudflare-access-tokens
-  namespace: flux-system
+  namespace: &namespace network
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-cloudflare-zero-trust-operator
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/core/network/external/cloudflare-zero-trust/access/tokens
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: network
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: true
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app external-cloudflare-access-groups
-  namespace: flux-system
+  namespace: &namespace network
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-cloudflare-access-tokens
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/core/network/external/cloudflare-zero-trust/access/groups
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: network
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
   wait: true

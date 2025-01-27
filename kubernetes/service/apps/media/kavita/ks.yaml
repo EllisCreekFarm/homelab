@@ -9,6 +9,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../../flux/components/cloudflare/zero-trust
+    - ../../../../../flux/components/gatus/external
   dependsOn:
     - name: openebs
     - name: external-cloudflare-access-groups

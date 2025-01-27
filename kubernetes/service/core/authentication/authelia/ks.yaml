@@ -1,19 +1,26 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app authelia
-  namespace: flux-system
+  namespace: &namespace authentication
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../../flux/components/gatus/external
+    - ../../../../../flux/components/cloudflare/zero-trust
   dependsOn:
     - name: lldap
+      namespace: authentication
     - name: openebs
+      namespace: openebs-system
     - name: onepassword-store
+      namespace: secrets
     - name: external-cloudflare-access-groups
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/core/authentication/authelia/app
   postBuild:
@@ -27,6 +34,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: authentication
+    namespace: flux-system
+  targetNamespace: *namespace
   timeout: 5m
-  wait: false
+  wait: true
