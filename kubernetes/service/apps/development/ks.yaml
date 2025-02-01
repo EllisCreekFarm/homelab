@@ -11,6 +11,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-cloudflare-access-groups
+      namespace: network
   interval: 30m
   path: ./kubernetes/service/apps/development/echo-server
   postBuild:
@@ -22,6 +23,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   targetNamespace: development
   timeout: 5m
   wait: false
