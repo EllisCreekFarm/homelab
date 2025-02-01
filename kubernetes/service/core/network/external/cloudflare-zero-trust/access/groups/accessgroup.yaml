@@ -7,7 +7,7 @@ spec:
   name: OidcUser
   include:
     - emailDomains:
-        - "kadaan.info"
+        - "${CLOUDFLARE_DOMAIN}"
   require:
     - country:
         - US
@@ -26,7 +26,7 @@ spec:
   name: OidcAdmin
   include:
     - emailDomains:
-        - "kadaan.info"
+        - "${CLOUDFLARE_DOMAIN}"
   require:
     - country:
         - US

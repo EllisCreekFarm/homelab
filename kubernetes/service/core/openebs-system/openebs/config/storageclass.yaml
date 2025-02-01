@@ -10,7 +10,7 @@ parameters:
   compression: "lz4"
   dedup: "off"
   fstype: "zfs"
-  poolname: "${ZFS_POOL_NAME}"
+  poolname: "${ZFS_POOL_NAME:?}"
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -24,7 +24,7 @@ parameters:
   dedup: "off"
   fstype: "zfs"
   shared: "yes"
-  poolname: "${ZFS_POOL_NAME}"
+  poolname: "${ZFS_POOL_NAME:?}"
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -39,4 +39,4 @@ parameters:
   dedup: "off"
   fstype: "zfs"
   shared: "yes"
-  poolname: "${ZFS_POOL_NAME}"
+  poolname: "${ZFS_POOL_NAME:?}"

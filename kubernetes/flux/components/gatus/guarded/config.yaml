@@ -1,0 +1,14 @@
+---
+endpoints:
+  - name: "${APP}"
+    group: guarded
+    url: 1.1.1.1
+    interval: 15s
+    ui:
+      hide-hostname: true
+      hide-url: true
+    dns:
+      query-name: "${GATUS_SUBDOMAIN:-${CLOUDFLARE_SUBDOMAIN:-${APP}}}.${CLOUDFLARE_DOMAIN}"
+      query-type: A
+    conditions:
+      - "len([BODY]) == 0"

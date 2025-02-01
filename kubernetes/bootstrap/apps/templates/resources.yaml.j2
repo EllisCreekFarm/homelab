@@ -13,7 +13,7 @@ metadata:
   namespace: cert-manager
   annotations:
     cert-manager.io/alt-names: '*.#{ get_env("CLOUDFLARE_DOMAIN") }#,#{ get_env("CLOUDFLARE_DOMAIN") }#'
-    cert-manager.io/certificate-name: "#{ get_env('CLOUDFLARE_DOMAIN').replace('.', '-') }#"
+    cert-manager.io/certificate-name: "cluster-tls"
     cert-manager.io/common-name: "#{ get_env('CLOUDFLARE_DOMAIN') }#"
     cert-manager.io/ip-sans: ""
     cert-manager.io/issuer-group: ""
@@ -43,6 +43,33 @@ stringData:
   onepassword-credentials.json: "#{ get_env('OP_CREDENTIALS_JSON') | b64encode }#"
   token: "#{ get_env('OP_CONNECT_TOKEN') }#"
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.3/namespace-v1.json
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: network
+#% if get_env('GATUS_SERVICE_TOKEN_CLOUDFLARE_CLIENT_ID') != "" and get_env('GATUS_SERVICE_TOKEN_CLOUDFLARE_SECRET_KEY') != "" and get_env('GATUS_SERVICE_TOKEN_SERVICE_TOKEN_ID') != "" %#
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gatus-service-token
+  namespace: network
+  annotations:
+    cloudflare.zelic.io/client-id-key: cloudflareClientId
+    cloudflare.zelic.io/client-secret-key: cloudflareSecretKey
+    cloudflare.zelic.io/token-id-key: serviceTokenID
+    reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+    reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: observability
+  labels:
+    cloudflare.zelic.io/owned-by: gatus
+data:
+  cloudflareClientId: "#{ get_env('GATUS_SERVICE_TOKEN_CLOUDFLARE_CLIENT_ID') }#"
+  cloudflareSecretKey: "#{ get_env('GATUS_SERVICE_TOKEN_CLOUDFLARE_SECRET_KEY') }#"
+  serviceTokenID: "#{ get_env('GATUS_SERVICE_TOKEN_SERVICE_TOKEN_ID') }#"
+#% endif %#
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.3/namespace-v1.json
 apiVersion: v1
 kind: Namespace
 metadata:

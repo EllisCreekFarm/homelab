@@ -108,7 +108,7 @@ tasks:
           TEMP_DIR: "{{.TEMP_DIR}}"
     vars:
       HOSTNAMES:
-        sh: yq --raw-output '[.nodes[].hostname] | join(" ")' "{{.BOOTSTRAP_DIR}}/talos/talconfig.yaml"
+        sh: yq '[.nodes[].hostname] | join(" ")' "{{.BOOTSTRAP_DIR}}/talos/talconfig.yaml"
     requires:
       vars:
         - TALOS_SECRETS
