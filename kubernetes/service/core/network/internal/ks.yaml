@@ -11,13 +11,16 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-tls
+      namespace: cert-manager
     - name: onepassword-store
+      namespace: secrets
   interval: 30m
   path: ./kubernetes/service/core/network/internal/ingress-nginx
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   targetNamespace: network
   timeout: 5m
   wait: false
@@ -38,6 +41,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   targetNamespace: network
   timeout: 5m
   wait: false
@@ -58,6 +62,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   targetNamespace: network
   timeout: 5m
   wait: false

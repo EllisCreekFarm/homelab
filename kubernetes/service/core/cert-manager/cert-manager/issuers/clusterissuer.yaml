@@ -14,7 +14,7 @@ spec:
       - dns01:
           cloudflare:
             apiTokenSecretRef:
-              name: cloudflare-secret
+              name: cloudflare-issuer-secret
               key: CF_API_TOKEN
         selector:
           dnsZones:
@@ -35,7 +35,7 @@ spec:
       - dns01:
           cloudflare:
             apiTokenSecretRef:
-              name: cloudflare-secret
+              name: cloudflare-issuer-secret
               key: CF_API_TOKEN
         selector:
           dnsZones:

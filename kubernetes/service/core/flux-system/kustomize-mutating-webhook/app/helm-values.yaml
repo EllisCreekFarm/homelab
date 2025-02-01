@@ -1,0 +1,9 @@
+---
+certManager:
+  enabled: true
+configMaps:
+  - create: false
+    name: cluster-settings
+    optional: false
+replicaCount: 1
+secrets: []

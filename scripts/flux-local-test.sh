@@ -8,7 +8,11 @@ function validate() {
 
     local flux_local_args=(
         "test"
+        "--enable-helm"
+        "--all-namespaces"
+        "--path"
         "${cluster_dir}/flux"
+        "-v"
         "$@"
     )
 

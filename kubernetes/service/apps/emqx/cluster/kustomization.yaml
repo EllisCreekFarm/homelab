@@ -8,4 +8,3 @@ resources:
   - ./externalsecret.yaml
   - ./gatus.yaml
   - ./ingress.yaml
-  - ../../../../templates/cloudflare/zero-trust
