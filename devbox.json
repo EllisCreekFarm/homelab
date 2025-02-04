@@ -16,7 +16,7 @@
     "moreutils":                            "0.70",
     "nodejs":                               "23.2.0",
     "pre-commit":                           "4.0.1",
-    "python":                               "3.10.16",
+    "python":                               "3.13.1",
     "python310Packages.dnspython":          "2.4.2",
     "python310Packages.email-validator":    "2.0.0",
     "python310Packages.netaddr":            "0.8.0",
