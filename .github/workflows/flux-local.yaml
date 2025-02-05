@@ -77,8 +77,8 @@ jobs:
         with:
           filters: |
             kubernetes:
-              - kubernetes/flux/**
-              - kubernetes/service/**
+              - pull/kubernetes/flux/**
+              - pull/kubernetes/service/**
 
       - name: Checkout Base Branch
         if: ${{ steps.filter.outputs.kubernetes == 'true' }}
