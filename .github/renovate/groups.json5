@@ -31,6 +31,14 @@
         "commitMessageTopic": "{{{groupName}}} group"
       },
       "separateMinorPatch": true
+    },
+    {
+      "description": ["Devbox Group"],
+      "groupName": "devbox",
+      "matchDatasources": ["devbox"],
+      "group": {
+        "commitMessageTopic": "{{{groupName}}} group"
+      }
     }
   ]
 }
