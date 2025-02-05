@@ -25,7 +25,7 @@
     "stern": "1.31.0",
     "talosctl": "1.9.1",
     "uv": "0.5.20",
-    "yq": "3.4.3"
+    "yq-go": "4.45.1"
   },
   "env": {
     "TASK_X_ENV_PRECEDENCE": "1",
@@ -47,6 +47,12 @@
       "update_python_dependencies": [
         "uv pip compile requirements.in -o requirements.txt",
         "deactivate"
+      ],
+      "kubeconform": [
+        "${DEVBOX_PROJECT_ROOT}/scripts/kubeconform.sh \"$@\""
+      ],
+      "flux-local-test": [
+        "${DEVBOX_PROJECT_ROOT}/scripts/flux-local-test.sh \"$@\""
       ]
     }
   }

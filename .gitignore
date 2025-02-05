@@ -31,3 +31,4 @@ wiki
 1password-connect-credentials.json
 # Python
 __pycache__/
+.pytest_cache/

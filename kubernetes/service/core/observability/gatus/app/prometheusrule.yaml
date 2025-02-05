@@ -16,8 +16,6 @@ spec:
             source: gatus
             severity: critical
           annotations:
-            description:
-              "The {{ $labels.group }} {{ $labels.type }} endpoint {{ $labels.name }} has been unreachable
-              for more than one minute."
+            description: "The {{ $labels.group }} {{ $labels.type }} endpoint {{ $labels.name }} has been unreachable for more than one minute."
             summary: "{{ $labels.group }}.{{ $labels.name }}.{{ $labels.type }} is unreachable."
             gatus_url: "https://${CLOUDFLARE_SUBDOMAIN}.${CLOUDFLARE_DOMAIN}/endpoints/{{$labels.group}}_{{$labels.name}}"

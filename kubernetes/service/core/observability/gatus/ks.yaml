@@ -6,7 +6,6 @@ metadata:
   name: &app gatus
   namespace: flux-system
 spec:
-  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -14,16 +13,17 @@ spec:
     - name: openebs
     - name: onepassword-store
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/core/observability/gatus/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: false
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/core/observability/gatus/app
   postBuild:
     substitute:
       APP: *app
       CLOUDFLARE_SUBDOMAIN: &subdomain status
       GATUS_SUBDOMAIN: *subdomain
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: observability
+  timeout: 5m
+  wait: false

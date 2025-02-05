@@ -34,7 +34,7 @@ tasks:
   apply-cluster-internal:
     internal: true
     cmds:
-      - for: { var: IP_ADDRS }
+      - for: {var: IP_ADDRS}
         task: apply-node-internal
         vars:
           IP: "{{.ITEM}}"
@@ -132,7 +132,7 @@ tasks:
   upgrade-cluster-internal:
     internal: true
     cmds:
-      - for: { var: IP_ADDRS }
+      - for: {var: IP_ADDRS}
         task: upgrade-node-internal
         vars:
           IP: "{{.ITEM}}"
@@ -291,7 +291,7 @@ tasks:
   reboot-cluster-internal:
     internal: true
     cmds:
-      - for: { var: IP_ADDRS }
+      - for: {var: IP_ADDRS}
         task: reboot-node-internal
         vars:
           IP: "{{.ITEM}}"

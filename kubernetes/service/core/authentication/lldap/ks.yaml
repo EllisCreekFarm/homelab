@@ -6,20 +6,20 @@ metadata:
   name: &app lldap
   namespace: flux-system
 spec:
-  targetNamespace: authentication
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: onepassword-store
+  interval: 30m
   path: ./kubernetes/service/core/authentication/lldap/app
+  postBuild:
+    substitute:
+      LLDAP_HTTP_PORT: "17170"
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+  targetNamespace: authentication
   timeout: 5m
-  postBuild:
-    substitute:
-      LLDAP_HTTP_PORT: "17170"
+  wait: false
