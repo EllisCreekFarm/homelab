@@ -36,4 +36,4 @@ jobs:
           project-path: .
 
       - name: Run kubeconform
-        run: ./kubeconform.sh
+        run: ./scripts/kubeconform.sh
