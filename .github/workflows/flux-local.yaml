@@ -6,9 +6,6 @@ on:
   pull_request:
     branches:
       - develop
-    paths:
-      - kubernetes/flux/**
-      - kubernetes/service/**
   merge_group:
 
 concurrency:
@@ -33,7 +30,17 @@ jobs:
           token: "${{ steps.app-token.outputs.token }}"
           persist-credentials: false
 
+      - name: Detect Changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            kubernetes:
+              - kubernetes/flux/**
+              - kubernetes/service/**
+
       - name: Run flux-local test
+        if: ${{ steps.filter.outputs.kubernetes == 'true' }}
         uses: docker://ghcr.io/allenporter/flux-local:v7.0.0@sha256:abf237e31d20de26f8a4b08e588cc927cb0a9f0ecf90d04bada00f393b919354
         with:
           args: test --enable-helm --all-namespaces --path /github/workspace/kubernetes/flux/cluster -v
@@ -64,7 +71,17 @@ jobs:
           path: pull
           persist-credentials: false
 
+      - name: Detect Changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            kubernetes:
+              - kubernetes/flux/**
+              - kubernetes/service/**
+
       - name: Checkout Base Branch
+        if: ${{ steps.filter.outputs.kubernetes == 'true' }}
         uses: actions/checkout@v4
         with:
           token: "${{ steps.app-token.outputs.token }}"
@@ -73,6 +90,7 @@ jobs:
           persist-credentials: false
 
       - name: Diff Resources
+        if: ${{ steps.filter.outputs.kubernetes == 'true' }}
         uses: docker://ghcr.io/allenporter/flux-local:v7.0.0@sha256:abf237e31d20de26f8a4b08e588cc927cb0a9f0ecf90d04bada00f393b919354
         with:
           args: >-
@@ -87,6 +105,7 @@ jobs:
             --output-file diff.patch
 
       - name: Generate Diff
+        if: ${{ steps.filter.outputs.kubernetes == 'true' }}
         id: diff
         run: |
           cat diff.patch;
@@ -102,8 +121,8 @@ jobs:
               echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - if: ${{ steps.diff.outputs.diff != '' }}
-        name: Add Comment
+      - name: Add Comment
+        if: ${{ steps.filter.outputs.kubernetes == 'true' && steps.diff.outputs.diff != '' }}
         uses: mshick/add-pr-comment@v2
         with:
           repo-token: "${{ steps.app-token.outputs.token }}"
