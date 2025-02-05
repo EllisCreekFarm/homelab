@@ -100,7 +100,7 @@ tasks:
   zfs-pool-cluster:
     internal: true
     cmds:
-      - for: { var: HOSTNAMES }
+      - for: {var: HOSTNAMES}
         task: zfs-pool-node
         vars:
           HOSTNAME: "{{.ITEM}}"

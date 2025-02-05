@@ -8,6 +8,12 @@ tasks:
     internal: true
     silent: true
     cmds:
+      - /bin/chmod 700 "{{.TEMP_DIR}}"
+      - /bin/chmod ug+s "{{.TEMP_DIR}}"
+      - /bin/chmod '+a#' 0 "user:$(whoami) allow read,write,file_inherit" "{{.TEMP_DIR}}"
+      - /bin/chmod '+a#' 1 "user:$(whoami) allow list,search,directory_inherit" "{{.TEMP_DIR}}"
+      - /bin/chmod '+a#' 2 "everyone deny read,write,file_inherit" "{{.TEMP_DIR}}"
+      - /bin/chmod '+a#' 3 "everyone deny list,search,directory_inherit" "{{.TEMP_DIR}}"
       - '{{if eq .TALOS_SECRETS_EXISTS "false"}}op inject --in-file={{.BOOTSTRAP_DIR}}/bootstrap.env --out-file="{{.TALOS_SECRETS}}" > /dev/null{{end}}'
       - task: talos_genconfig
         vars:
@@ -21,7 +27,6 @@ tasks:
       TALOS_SECRETS: '{{.TEMP_DIR}}/.talos_secrets'
       TALOS_SECRETS_EXISTS:
         sh: test -f '{{.TALOS_SECRETS}}' && echo true || echo false
-    requires:
       vars:
         - TEMP_DIR
     preconditions:

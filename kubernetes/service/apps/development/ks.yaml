@@ -6,22 +6,22 @@ metadata:
   name: &app echo-server
   namespace: flux-system
 spec:
-  targetNamespace: development
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/apps/development/echo-server
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: false
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/apps/development/echo-server
   postBuild:
     substitute:
       APP: *app
       CLOUDFLARE_SUBDOMAIN: echo
       CLOUDFLARE_ZEROTRUST_ACCESS_GROUP_NAME: oidc-admin
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: development
+  timeout: 5m
+  wait: false

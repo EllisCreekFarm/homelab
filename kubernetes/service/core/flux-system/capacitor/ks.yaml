@@ -6,22 +6,22 @@ metadata:
   name: &app capacitor
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-cloudflare-access-groups
-  path: ./kubernetes/service/core/flux-system/capacitor
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  wait: true
   interval: 30m
-  timeout: 5m
+  path: ./kubernetes/service/core/flux-system/capacitor
   postBuild:
     substitute:
       APP: *app
       CLOUDFLARE_SUBDOMAIN: &subdomain gitops
       GATUS_SUBDOMAIN: *subdomain
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: flux-system
+  timeout: 5m
+  wait: true

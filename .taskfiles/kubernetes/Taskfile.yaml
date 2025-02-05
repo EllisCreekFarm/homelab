@@ -77,7 +77,7 @@ tasks:
       - task: common:kubectl_init
         vars:
           TEMP_DIR: '{{.TEMP_DIR}}'
-      - for: { var: RESOURCE }
+      - for: {var: RESOURCE}
         cmd: kubectl get {{.ITEM}} {{.CLI_ARGS | default "-A"}}
     env:
       KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'

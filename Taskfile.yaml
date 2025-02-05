@@ -14,7 +14,7 @@ vars:
   CLUSTER_GIT_REPO_BRANCH:
     sh: "git rev-parse --abbrev-ref HEAD"
   VAULT:
-    sh: "echo '{{ .BRANCH }}' | awk -F: '{if ($1 == \"master\") { print \"kubernetes - production\" } else { print \"kubernetes - develop\" }}'"
+    sh: "echo '{{ .CLUSTER_GIT_REPO_BRANCH }}' | awk -F: '{if ($1 == \"master\") { print \"kubernetes - production\" } else { print \"kubernetes - develop\" }}'"
 
 env:
   MAKEJINJA_SETTINGS: '{{.MAKEJINJA_SETTINGS}}'
@@ -94,3 +94,34 @@ tasks:
     vars:
       TEMP_DIR:
         sh: mktemp -d
+
+  shell:
+    desc: Starts a shell that can be used to interact with the Kubernetes cluster
+    interactive: true
+    silent: true
+    cmds:
+      - defer: rm -rf '{{.TEMP_DIR}}'
+      - task: common:kubectl_init
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+      - task: shell_internal
+        vars:
+          TEMP_DIR: '{{.TEMP_DIR}}'
+    vars:
+      TEMP_DIR:
+        sh: mktemp -d
+
+  shell_internal:
+    internal: true
+    interactive: true
+    silent: true
+    env:
+      CLUSTER_CONFIG_DIR: '{{.TEMP_DIR}}'
+      KUBECONFIG: '{{.TEMP_DIR}}/kubeconfig'
+      TALOSCONFIG: '{{.TEMP_DIR}}/talosconfig'
+    dotenv:
+      - '{{.TEMP_DIR}}/.talos_secrets'
+    cmd: '{{.SHELL}} {{.CLI_ARGS}}'
+    requires:
+      vars:
+        - TEMP_DIR

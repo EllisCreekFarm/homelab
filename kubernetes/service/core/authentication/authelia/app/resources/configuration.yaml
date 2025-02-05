@@ -1,3 +1,4 @@
+---
 server:
   buffers:
     read: 8192
