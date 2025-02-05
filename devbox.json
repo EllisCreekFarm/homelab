@@ -14,7 +14,7 @@
     "kustomize":                            "5.6.0",
     "makejinja":                            "2.7.2",
     "moreutils":                            "0.70",
-    "nodejs":                               "23.2.0",
+    "nodejs":                               "23.6.1",
     "pre-commit":                           "4.0.1",
     "python":                               "3.13.1",
     "python310Packages.dnspython":          "2.4.2",
