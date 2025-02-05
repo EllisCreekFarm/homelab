@@ -7,8 +7,6 @@ on:
     branches:
       - master
       - develop
-    paths:
-      - kubernetes/**
   merge_group:
 
 jobs:
@@ -29,11 +27,21 @@ jobs:
           token: "${{ steps.app-token.outputs.token }}"
           persist-credentials: false
 
+      - name: Detect Changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            kubernetes:
+              - 'kubernetes/**'
+
       - name: Install devbox
+        if: ${{ steps.filter.outputs.kubernetes == 'true' }}
         uses: jetify-com/devbox-install-action@v0.12.0
         with:
           enable-cache: true
           project-path: .
 
       - name: Run kubeconform
+        if: ${{ steps.filter.outputs.kubernetes == 'true' }}
         run: ./scripts/kubeconform.sh
