@@ -148,7 +148,7 @@ spec:
         kubernetes-pods:
           # renovate: depName="Kubernetes / Views / Pods"
           gnetId: 15760
-          revision: 36
+          revision: 34
           datasource: Prometheus
         kubernetes-volumes:
           # renovate: depName="K8s / Storage / Volumes / Cluster"
@@ -172,7 +172,7 @@ spec:
         prometheus:
           # renovate: depName="Prometheus"
           gnetId: 19105
-          revision: 6
+          revision: 7
           datasource: Prometheus
     sidecar:
       dashboards:
