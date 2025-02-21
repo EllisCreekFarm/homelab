@@ -99,7 +99,7 @@ spec:
             dependsOn: assets-sync
             image:
               repository: public.ecr.aws/docker/library/busybox
-              tag: 1.37.0-musl@sha256:37ccc05112d0a7162b605c375f5c0f5cfbc6e6c4fc8030ead6ae26a18c28a542
+              tag: 1.37.0-musl@sha256:5b2531a497e1f4f0994272e72168d765cc54dc5da760e7bbac9c95aec383b137
             command: ["/bin/sh", "-c", "cp -v -r /data/git/homelab/kubernetes/service/core/authentication/authelia/app/assets/. /assets/"]
     defaultPodOptions:
       securityContext:
