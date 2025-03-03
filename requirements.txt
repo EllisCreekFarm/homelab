@@ -4,7 +4,7 @@ aiofiles==24.1.0
     # via flux-local
 exceptiongroup==1.2.2
     # via pytest
-flux-local==7.0.0
+flux-local==7.1.0
     # via -r requirements.in
 gitdb==4.0.12
     # via gitpython
