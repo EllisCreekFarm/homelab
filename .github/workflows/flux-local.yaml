@@ -41,7 +41,7 @@ jobs:
 
       - name: Run flux-local test
         if: ${{ steps.filter.outputs.kubernetes == 'true' }}
-        uses: docker://ghcr.io/allenporter/flux-local:v7.0.0@sha256:abf237e31d20de26f8a4b08e588cc927cb0a9f0ecf90d04bada00f393b919354
+        uses: docker://ghcr.io/allenporter/flux-local:v7.11.0@sha256:5e815fabc544d56adaed7b815c6243eca4776ef83b9a11bec370fd888196de03
         with:
           args: test --enable-helm --all-namespaces --path /github/workspace/kubernetes/flux/cluster -v
 
@@ -91,7 +91,7 @@ jobs:
 
       - name: Diff Resources
         if: ${{ steps.filter.outputs.kubernetes == 'true' }}
-        uses: docker://ghcr.io/allenporter/flux-local:v7.0.0@sha256:abf237e31d20de26f8a4b08e588cc927cb0a9f0ecf90d04bada00f393b919354
+        uses: docker://ghcr.io/allenporter/flux-local:v7.11.0@sha256:5e815fabc544d56adaed7b815c6243eca4776ef83b9a11bec370fd888196de03
         with:
           args: >-
             diff ${{ matrix.resources }}
