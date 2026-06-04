@@ -12,7 +12,7 @@ gitpython==3.1.44
     # via flux-local
 iniconfig==2.0.0
     # via pytest
-mashumaro==3.15
+mashumaro==3.22
     # via flux-local
 nest-asyncio==1.6.0
     # via flux-local
