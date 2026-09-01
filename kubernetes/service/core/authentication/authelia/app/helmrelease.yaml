@@ -73,7 +73,7 @@ spec:
           litestream: &lightstream
             image:
               repository: "docker.io/litestream/litestream"
-              tag: "0.3.13"
+              tag: "0.5.17"
               pullPolicy: "IfNotPresent"
             args: ["replicate"]
             envFrom:
