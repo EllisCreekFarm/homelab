@@ -37,7 +37,7 @@ jobs:
 
       - name: Install devbox
         if: ${{ steps.filter.outputs.kubernetes == 'true' }}
-        uses: jetify-com/devbox-install-action@v0.12.0
+        uses: jetify-com/devbox-install-action@v0.15.0
         with:
           enable-cache: true
           project-path: .
